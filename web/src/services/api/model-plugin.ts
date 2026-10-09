@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig } from "axios";
 
 import i18n from "@/i18n";
 import { buildApiUrl, withLocalProxy, type AiConfig, type ModelCapability } from "@/stores/use-config-store";
+import { rewriteAgnesImageUrl } from "@/lib/image-url";
 
 type RequestOptions = { signal?: AbortSignal };
 
@@ -294,7 +295,7 @@ async function generateImage({
   form.set("response_format", "b64_json");
   const imageField = images.length > 1 ? "image[]" : "image";
   for (const dataUrl of images) {
-    form.append(imageField, await (await fetch(dataUrl)).blob(), "ref.png");
+    form.append(imageField, await (await fetch(rewriteAgnesImageUrl(dataUrl))).blob(), "ref.png");
   }
   const edited = await request({
     method: "post",
@@ -488,14 +489,14 @@ async function generateVideo({
   form.set("mode", mode);
   if (mode === "frames") {
     if (images[0]) {
-      form.append("first_frame", await (await fetch(images[0])).blob(), "first.png");
+      form.append("first_frame", await (await fetch(rewriteAgnesImageUrl(images[0]))).blob(), "first.png");
     }
     if (images[1]) {
-      form.append("last_frame", await (await fetch(images[1])).blob(), "last.png");
+      form.append("last_frame", await (await fetch(rewriteAgnesImageUrl(images[1]))).blob(), "last.png");
     }
   } else {
     for (const dataUrl of images) {
-      form.append("image[]", await (await fetch(dataUrl)).blob(), "ref.png");
+      form.append("image[]", await (await fetch(rewriteAgnesImageUrl(dataUrl))).blob(), "ref.png");
     }
   }
   for (const file of videos) {

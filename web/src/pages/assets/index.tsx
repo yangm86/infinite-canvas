@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { useCopyText } from "@/hooks/use-copy-text";
 import { formatBytes, readFileAsDataUrl } from "@/lib/image-utils";
+import { rewriteAgnesImageUrl } from "@/lib/image-url";
 import { getMediaBlob } from "@/services/file-storage";
 import { getImageBlob, getImagePreviewRevision, subscribeImagePreviews, uploadImage } from "@/services/image-storage";
 import { cn } from "@/lib/utils";
@@ -551,7 +552,7 @@ async function readAssetMediaBlob(asset: Extract<Asset, { kind: "image" | "video
     }
     const url = asset.kind === "video" ? asset.data.url : asset.data.dataUrl || asset.coverUrl;
     if (!url) return null;
-    const response = await fetch(url);
+    const response = await fetch(rewriteAgnesImageUrl(url));
     return response.ok ? response.blob() : null;
 }
 
