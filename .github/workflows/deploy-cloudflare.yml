@@ -32,9 +32,17 @@ jobs:
         env:
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
+      - name: Create Pages project (if missing)
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create infinite-canvas --production-branch=main
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy web/out --project-name=infinite-canvas
+          command: pages deploy web/out --project-name=infinite-canvas --branch=main --commit-dirty=true
