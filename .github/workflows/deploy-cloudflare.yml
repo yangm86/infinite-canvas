@@ -17,22 +17,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
+          bun-version: latest
 
       - name: Install dependencies
         working-directory: ./web
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build frontend
         working-directory: ./web
-        run: npm run build
+        run: bun run build
         env:
-          # 如果构建时需要环境变量，可在此处添加
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
       - name: Deploy to Cloudflare Pages
